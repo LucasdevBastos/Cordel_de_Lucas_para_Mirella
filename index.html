@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>Cordel de Lucas para Mirella</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Amatic+SC:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    /* --- RESET & BASE --- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Marcellus", serif;
+      color: #3b2a1d;
+      overflow-x: hidden; /* evita rolagem lateral */
+      padding: 2rem 1rem;
+
+      /* Fundo estilo madeira clara/mesa */
+      background-color: #d4a373;
+      background-image:
+        linear-gradient(90deg, rgba(255,255,255,.07) 50%, transparent 50%),
+        linear-gradient(90deg, rgba(255,255,255,.13) 50%, transparent 50%),
+        linear-gradient(90deg, transparent 50%, rgba(255,255,255,.17) 50%),
+        linear-gradient(90deg, transparent 50%, rgba(255,255,255,.19) 50%);
+      background-size: 13px, 29px, 37px, 53px;
+    }
+
+    /* Vinheta escura nas bordas da tela */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.4));
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* --- CENA PRINCIPAL --- */
+    .scene {
+      width: 100%;
+      max-width: 1000px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* --- CABEÇALHO --- */
+    .top-bar {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #2b1b10;
+    }
+
+    .title-main {
+      font-family: "Amatic SC", cursive;
+      font-size: clamp(2.5rem, 6vw, 3.5rem);
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+      text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
+    }
+
+    .title-badge {
+      display: inline-block;
+      background: #fdf6e3;
+      border: 2px solid #5c4033;
+      padding: 0.2rem 1.5rem;
+      border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px; /* Borda orgânica */
+      box-shadow: 3px 4px 0px rgba(0,0,0,0.2);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-top: 0.5rem;
+    }
+    
+    .subtitle-indigena {
+      font-size: 0.9rem;
+      margin-top: 0.3rem;
+      font-style: italic;
+      opacity: 0.8;
+    }
+
+    /* --- O LIVRO --- */
+    .book-container {
+      position: relative;
+      perspective: 1500px; /* Profundidade 3D */
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .book {
+      position: relative;
+      width: 100%;
+      /* Aspect ratio de livro aberto */
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #fdf3dc;
+      border-radius: 6px;
+      box-shadow:
+        0 20px 40px rgba(0,0,0,0.4), /* Sombra ambiente */
+        0 5px 10px rgba(0,0,0,0.2),  /* Sombra próxima */
+        inset 0 0 60px rgba(139, 69, 19, 0.15); /* Envelhecimento interno */
+      
+      /* Borda externa grossa tipo capa de couro ou papelão grosso */
+      border: 8px solid #5c4033; 
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    /* Lombada Central (dobra do livro) */
+    .book::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 40px;
+      transform: translateX(-50%);
+      background: linear-gradient(
+        to right,
+        rgba(0,0,0,0.05),
+        rgba(0,0,0,0.2) 45%,
+        rgba(0,0,0,0.3) 50%,
+        rgba(0,0,0,0.2) 55%,
+        rgba(0,0,0,0.05)
+      );
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    /* Marcador de Página */
+    .bookmark {
+      position: absolute;
+      right: 40px;
+      top: -10px;
+      width: 30px;
+      height: 100px;
+      background: #d9534f; /* Vermelho terra */
+      background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.1) 5px, rgba(0,0,0,0.1) 10px);
+      box-shadow: 2px 4px 10px rgba(0,0,0,0.3);
+      z-index: 20;
+      clip-path: polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%);
+      transform-origin: top center;
+      animation: sway 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes sway {
+      from { transform: rotate(-2deg); }
+      to { transform: rotate(2deg); }
+    }
+
+    /* --- PÁGINAS --- */
+    .page {
+      padding: 2rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      min-height: 480px; /* Altura mínima para não achatar o texto */
+    }
+
+    /* Textura de papel velho na página */
+    .page::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png'); /* Textura leve hospedada externamente ou base64 */
+      opacity: 0.6;
+      pointer-events: none;
+      mix-blend-mode: multiply;
+    }
+
+    .page-inner {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px dashed rgba(92, 64, 51, 0.3);
+      padding-bottom: 0.5rem;
+    }
+
+    .page-header span {
+      font-family: "Amatic SC", cursive;
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #8b4513;
+    }
+
+    .page-content {
+      flex-grow: 1;
+      font-size: 1.15rem;
+      line-height: 1.8;
+      white-space: pre-wrap; /* Mantém quebras de linha e ajusta longas */
+      text-align: left;
+      display: flex;
+      align-items: center; /* Centraliza o poema verticalmente na página */
+    }
+
+    .page-footer {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: #8b4513;
+      opacity: 0.8;
+    }
+
+    .ornament {
+      font-size: 1rem;
+    }
+
+    /* Animação de virar página (Crossfade simples) */
+    .fade-out {
+      opacity: 0;
+      transform: translateY(5px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    
+    .fade-in {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    /* --- CONTROLES --- */
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.5rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: #fdf6e3;
+      border: 2px solid #5c4033;
+      color: #5c4033;
+      font-family: "Marcellus", serif;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 0.6rem 1.5rem;
+      cursor: pointer;
+      border-radius: 50px;
+      box-shadow: 0 4px 0 #5c4033;
+      transition: all 0.1s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 0 0 #5c4033;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 4px 0 #5c4033;
+    }
+
+    .page-count {
+      font-family: "Amatic SC";
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #fdf6e3;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+
+    .hint {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #3e2723;
+      margin-top: 1rem;
+      opacity: 0.7;
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+      color: #3e2723;
+    }
+
+    /* --- RESPONSIVIDADE (CELULAR) --- */
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem 0.5rem;
+        align-items: flex-start; /* Começa do topo no mobile */
+      }
+
+      .title-main {
+        font-size: 2.5rem;
+      }
+
+      .book {
+        grid-template-columns: 1fr; /* Uma coluna só */
+        border-width: 4px;
+      }
+
+      /* Esconder a lombada central e o marcador no mobile para limpar a vista */
+      .book::before, .bookmark {
+        display: none;
+      }
+
+      .page {
+        min-height: auto; /* Altura flexível */
+        padding: 1.5rem 1rem;
+      }
+
+      /* Adiciona uma linha tracejada entre as páginas quando empilhadas */
+      #leftPageWrapper {
+        border-bottom: 2px dashed rgba(92, 64, 51, 0.2);
+      }
+
+      .page-content {
+        font-size: 1rem;
+        min-height: 150px; /* Altura mínima para o texto não ficar colapsado */
+        align-items: flex-start;
+      }
+
+      .controls {
+        gap: 1rem;
+      }
+
+      .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="scene">
+    <div class="top-bar">
+      <h1 class="title-main">
+        <span class="title-badge">Cordel de Lucas para Mirella</span>
+      </h1>
+      <p class="subtitle">“Entre o Meu Corpo e o Teu Céu”</p>
+      <p class="subtitle-indigena">Do chão Pankará ao infinito do teu olhar. 🌵</p>
+    </div>
+
+    <div class="book-container">
+      <div class="bookmark"></div>
+      
+      <div class="book">
+        <div class="page" id="leftPageWrapper">
+          <div class="page-inner">
+            <div class="page-header"><span>✦ Verso ✦</span></div>
+            <div id="leftText" class="page-content"></div>
+            <div class="page-footer">
+              <span class="ornament">⚜</span>
+              <span id="leftNum">1</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="page" id="rightPageWrapper">
+          <div class="page-inner">
+            <div class="page-header"><span>✦ Prosa ✦</span></div>
+            <div id="rightText" class="page-content"></div>
+            <div class="page-footer">
+              <span id="rightNum">2</span>
+              <span class="ornament">⚜</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="prevBtn" class="btn">❮ Voltar</button>
+      <span class="page-count" id="pageIndicator"></span>
+      <button id="nextBtn" class="btn">Avançar ❯</button>
+    </div>
+
+    <p class="hint">Dica: Use as setas do teclado para virar a página.</p>
+    
+    <p class="footer-note">Feito com amor e código. 🧡</p>
+  </div>
+
+  <script>
+    // --- CONTEÚDO DO CORDEL ---
+    // Mantive exatamente o seu texto original.
+    const pages = [
+      `📜 CORDEL DO AMOR
+
+“Entre o Meu Corpo e o Teu Céu”
+
+Para: Mirella
+De: Lucas Vinícius`,
+
+      `No curso FIC eu vivia,
+na minha calma e rotina,
+sem esperar grandes coisas,
+só seguindo minha sina.
+Mas num dia quente de Nordeste,
+o destino abriu a cortina.`,
+
+      `Eu entrei na sala sem pressa,
+feito quem só quer se sentar,
+mas quando ergui meus olhos,
+minha alma começou a queimar.
+Porque tu tava ali, Mirella,
+sentada na mesa, a brilhar.`,
+
+      `E eu juro por tudo que tenho,
+por cada chão do meu sertão:
+tu parecia uma estrela acesa
+no meio do dia e do calorão.
+Uma luz viva, impossível,
+que acertou direto meu coração.`,
+
+      `Naquele instante certeiro,
+meu peito perdeu direção.
+Foi como se o mundo inteiro
+parasse naquela visão.
+Eu pensei: “Oxente, meu Deus…
+que mulher é essa, hein, coração?”`,
+
+      `Quando teu olhar tocou o meu,
+foi choque doce e quente.
+Parecia coisa escrita
+longe daqui, lá na frente.
+Ali mesmo eu entendi:
+“Essa mulher mexe com a gente”.`,
+
+      `Fui te vendo devagarinho,
+com aquele teu jeito manso,
+tão bonita, tão sincera,
+tão forte no teu descanso.
+E quanto mais eu te via,
+mais eu caía no teu encanto.`,
+
+      `Te encontrar nesse mundão
+foi ganhar a vida outra vez.
+Oito bilhões caminhando,
+mas só tu me virou de vez.
+Eu senti: “é ela, meu Deus”,
+antes mesmo da primeira vez.`,
+
+      `E no começo, sem vergonha,
+eu falei com fé e vontade:
+“Se a gente namorar um dia,
+um telescópio eu vou te entregar de verdade.”
+Não era brincadeira, não,
+era promessa de felicidade.`,
+
+      `Se tu tá lendo este cordel,
+é porque a vida sorriu.
+A semente virou floresta,
+o sonho virou abril.
+E esse presente que eu te trago
+é parte do amor que floriu.`,
+
+      `Mas agora, meu amor,
+deixa eu dizer com peito aberto:
+eu me entreguei todinho a tu,
+no jeito mais puro e certo.
+Te dei meu corpo, meu calor,
+meu desejo vivo e desperto.`,
+
+      `Quero que nossa intimidade
+cresça feito fogaréu.
+Quero tua pele na minha,
+quero o gosto doce do mel.
+Quero teu suspiro perto,
+quero tua noite no meu céu.`,
+
+      `Quero te conhecer inteira,
+nos teus medos, nos teus lados,
+no teu cheiro, no teu abraço,
+nos teus sonhos calados.
+E, quando tu me chamar baixinho,
+quero te ter entrelaçada nos meus cuidados.`,
+
+      `Desejo que nosso querer
+seja forte, fundo e bonito,
+daqueles que a alma reclama
+e o corpo nunca evita.
+Quero te amar sem silêncio,
+com carinho que grita.`,
+
+      `Quero vida, tua vida comigo,
+história, tempo, ligação.
+Quero amigos, quero festas,
+quero paz no coração.
+Quero a casa cheia de riso,
+e o futuro na nossa mão.`,
+
+      `Mirella, meu amor, meu encanto,
+tu é vento, brisa e tentação.
+Tu é calmaria na alma
+e incêndio no colchão.
+E eu te amo tão profundo
+que amor virou devoção.`,
+
+      `E agora, no fim desse cordel,
+eu faço o que prometi um dia:
+entrego o céu pra teus olhos,
+entrego a noite pra tua alegria.
+O amor virou verdade,
+a promessa virou poesia.`,
+
+      `Então toma aqui teu presente, meu mel,
+toma aqui teu telescópio.
+Pra mirar comigo o céu,
+e amar no toque mais próprio.
+Que ele lembre pra todo sempre
+do amor que hoje te entrego.`
+    ];
+
+    // --- LÓGICA ---
+    let currentIndex = 0;
+
+    // Elementos do DOM
+    const leftTextEl = document.getElementById('leftText');
+    const rightTextEl = document.getElementById('rightText');
+    const leftNumEl = document.getElementById('leftNum');
+    const rightNumEl = document.getElementById('rightNum');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const indicator = document.getElementById('pageIndicator');
+    const leftWrapper = document.getElementById('leftPageWrapper');
+    const rightWrapper = document.getElementById('rightPageWrapper');
+
+    function updateContent() {
+      // Aplica classe de fade-out para suavidade
+      leftTextEl.classList.add('fade-out');
+      rightTextEl.classList.add('fade-out');
+      leftTextEl.classList.remove('fade-in');
+      rightTextEl.classList.remove('fade-in');
+
+      setTimeout(() => {
+        // Define o texto
+        const textLeft = pages[currentIndex] || "";
+        const textRight = pages[currentIndex + 1] || "";
+
+        leftTextEl.innerText = textLeft;
+        rightTextEl.innerText = textRight;
+
+        // Números das páginas
+        leftNumEl.innerText = textLeft ? currentIndex + 1 : "";
+        rightNumEl.innerText = textRight ? currentIndex + 2 : "";
+
+        // Esconde elementos vazios se a página acabar
+        leftWrapper.style.opacity = textLeft ? "1" : "0";
+        rightWrapper.style.opacity = textRight ? "1" : "0";
+
+        // Atualiza botões
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex >= pages.length - 2;
+
+        // Atualiza indicador
+        const total = pages.length;
+        indicator.innerText = `${currentIndex + 1}-${Math.min(currentIndex + 2, total)} / ${total}`;
+
+        // Aplica fade-in
+        leftTextEl.classList.remove('fade-out');
+        rightTextEl.classList.remove('fade-out');
+        leftTextEl.classList.add('fade-in');
+        rightTextEl.classList.add('fade-in');
+      }, 200);
+    }
+
+    function nextPage() {
+      if (currentIndex < pages.length - 2) {
+        currentIndex += 2;
+        updateContent();
+      }
+    }
+
+    function prevPage() {
+      if (currentIndex > 0) {
+        currentIndex -= 2;
+        updateContent();
+      }
+    }
+
+    // Event Listeners
+    nextBtn.addEventListener('click', nextPage);
+    prevBtn.addEventListener('click', prevPage);
+
+    // Navegação por teclado
+    document.addEventListener('keydown', (e) => {
+      if (e.key === "ArrowRight") nextPage();
+      if (e.key === "ArrowLeft") prevPage();
+    });
+
+    // Inicializa
+    updateContent();
+
+  </script>
+</body>
+</html>

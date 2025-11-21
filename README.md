@@ -3,17 +3,12 @@
 > Um livreto digital interativo, unindo a tradição da Literatura de Cordel com tecnologia web moderna.
 
 ![Status do Projeto](https://img.shields.io/badge/Status-Concluído-success?style=for-the-badge)
-![Licença](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
 ## 📖 Sobre o Projeto
 
 Este projeto é uma aplicação web desenvolvida para simular a experiência de leitura de um **Cordel** físico. Foi criado como um presente pessoal, combinando poesia autoral com design de interface imersivo.
 
 A interface apresenta texturas realistas (madeira e papel envelhecido), tipografia temática e uma lógica de navegação que imita o virar de páginas de um livro, adaptando-se perfeitamente a dispositivos móveis e desktops.
-
-### 🎨 Preview
-
-![Preview do Projeto](./screenshot.png)
 
 ## 🚀 Tecnologias Utilizadas
 
@@ -47,7 +42,7 @@ O projeto foi construído utilizando tecnologias nativas para garantir leveza e 
 ## 🔗 Deploy
 
 O projeto pode ser visualizado online através do GitHub Pages:
-[**Link para o Demo**](https://seu-usuario.github.io/cordel-digital)
+[**Link para o Demo**](https://lucasdevbastos.github.io/Cordel_de_Lucas_para_Mirella/)
 
 ---
 

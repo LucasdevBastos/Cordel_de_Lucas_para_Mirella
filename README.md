@@ -10,10 +10,6 @@ Este projeto é uma aplicação web desenvolvida para simular a experiência de 
 
 A interface apresenta texturas realistas (madeira e papel envelhecido), tipografia temática e uma lógica de navegação que imita o virar de páginas de um livro, adaptando-se perfeitamente a dispositivos móveis e desktops.
 
-### 🎨 Preview
-
-![Preview do Projeto]([./screenshot.png](https://lucasdevbastos.github.io/Cordel_de_Lucas_para_Mirella/))
-
 ## 🚀 Tecnologias Utilizadas
 
 O projeto foi construído utilizando tecnologias nativas para garantir leveza e performance máxima:
@@ -46,7 +42,7 @@ O projeto foi construído utilizando tecnologias nativas para garantir leveza e 
 ## 🔗 Deploy
 
 O projeto pode ser visualizado online através do GitHub Pages:
-[**Link para o Demo**](https://seu-usuario.github.io/cordel-digital)
+[**Link para o Demo**](https://lucasdevbastos.github.io/Cordel_de_Lucas_para_Mirella/)
 
 ---
 

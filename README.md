@@ -3,7 +3,6 @@
 > Um livreto digital interativo, unindo a tradição da Literatura de Cordel com tecnologia web moderna.
 
 ![Status do Projeto](https://img.shields.io/badge/Status-Concluído-success?style=for-the-badge)
-![Licença](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
 ## 📖 Sobre o Projeto
 
@@ -13,7 +12,7 @@ A interface apresenta texturas realistas (madeira e papel envelhecido), tipograf
 
 ### 🎨 Preview
 
-![Preview do Projeto](./screenshot.png)
+![Preview do Projeto]([./screenshot.png](https://lucasdevbastos.github.io/Cordel_de_Lucas_para_Mirella/))
 
 ## 🚀 Tecnologias Utilizadas
 
